@@ -263,6 +263,7 @@ steps:
       minPodsInSmallCluster: {{$MIN_PODS_IN_SMALL_CLUSTERS}}
       image: {{$latencyPodImage}}
 {{end}}
+{{end}}
 
 - module:
     path: /modules/measurements.yaml
