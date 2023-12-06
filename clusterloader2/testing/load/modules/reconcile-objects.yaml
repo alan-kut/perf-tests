@@ -92,7 +92,106 @@ steps:
     tuningSet: {{$tuningSet}}
     objectBundle:
     - basename: daemonset
-      objectTemplatePath: daemonset.yaml
+      objectTemplatePath: daemonset0.yaml
+      templateFillMap:
+        Image: {{$daemonSetImage}}
+        Env: {{$daemonSetEnv}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$daemonSetReplicas}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: daemonset1
+      objectTemplatePath: daemonset1.yaml
+      templateFillMap:
+        Image: {{$daemonSetImage}}
+        Env: {{$daemonSetEnv}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$daemonSetReplicas}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: daemonset2
+      objectTemplatePath: daemonset2.yaml
+      templateFillMap:
+        Image: {{$daemonSetImage}}
+        Env: {{$daemonSetEnv}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$daemonSetReplicas}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: daemonset3
+      objectTemplatePath: daemonset3.yaml
+      templateFillMap:
+        Image: {{$daemonSetImage}}
+        Env: {{$daemonSetEnv}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$daemonSetReplicas}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: daemonset4
+      objectTemplatePath: daemonset4.yaml
+      templateFillMap:
+        Image: {{$daemonSetImage}}
+        Env: {{$daemonSetEnv}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$daemonSetReplicas}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: daemonset5
+      objectTemplatePath: daemonset5.yaml
+      templateFillMap:
+        Image: {{$daemonSetImage}}
+        Env: {{$daemonSetEnv}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$daemonSetReplicas}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: daemonset6
+      objectTemplatePath: daemonset6.yaml
+      templateFillMap:
+        Image: {{$daemonSetImage}}
+        Env: {{$daemonSetEnv}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$daemonSetReplicas}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: daemonset7
+      objectTemplatePath: daemonset7.yaml
+      templateFillMap:
+        Image: {{$daemonSetImage}}
+        Env: {{$daemonSetEnv}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$daemonSetReplicas}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: daemonset8
+      objectTemplatePath: daemonset8.yaml
+      templateFillMap:
+        Image: {{$daemonSetImage}}
+        Env: {{$daemonSetEnv}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$daemonSetReplicas}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: daemonset9
+      objectTemplatePath: daemonset9.yaml
       templateFillMap:
         Image: {{$daemonSetImage}}
         Env: {{$daemonSetEnv}}
