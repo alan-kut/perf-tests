@@ -31,6 +31,11 @@
 {{$mediumStatefulSetSize := .mediumStatefulSetSize}}
 {{$mediumStatefulSetsPerNamespace := .mediumStatefulSetsPerNamespace}}
 
+# AI/ML StatefulSets
+{{$aiMlReplicasA := .aiMlReplicasA}}
+{{$aiMlReplicasB := .aiMlReplicasB}}
+{{$aiMlSize := .aiMlSize}}
+
 # Jobs
 {{$bigJobSize := .bigJobSize}}
 {{$bigJobsPerNamespace := .bigJobsPerNamespace}}
@@ -54,6 +59,8 @@
 {{$NET_POLICY_ENFORCEMENT_LATENCY_TARGET_LABEL_KEY := DefaultParam .CL2_NET_POLICY_ENFORCEMENT_LATENCY_TARGET_LABEL_KEY "net-pol-test"}}
 {{$NET_POLICY_ENFORCEMENT_LATENCY_TARGET_LABEL_VALUE := DefaultParam .CL2_NET_POLICY_ENFORCEMENT_LATENCY_TARGET_LABEL_VALUE "enforcement-latency"}}
 {{$NET_POLICY_SERVER_EVERY_NTH_POD := DefaultParam .CL2_NET_POLICY_SERVER_EVERY_NTH_POD 3}}
+{{$MN_STATEFULSET_NUMBER := DefaultParam .CL2_MN_STATEFULSET_NUMBER 4}}
+{{$MN_STATEFULSET_ENABLE_LOAD_CHURN := DefaultParam .MN_STATEFULSET_ENABLE_LOAD_CHURN false}}
 
 steps:
 - name: Starting measurement for '{{$actionName}}'
@@ -81,9 +88,42 @@ steps:
       checkIfPodsAreUpdated: {{$CHECK_IF_PODS_ARE_UPDATED}}
       labelSelector: group = load
       operationTimeout: {{$operationTimeout}}
+  - Method: WaitForControlledPodsRunning
+    Instances:
+    - Identifier: WaitForRunningAiMlStatefulSets
+      Params:
+        apiVersion: apps/v1
+        kind: StatefulSet
+    Params:
+      action: start
+      checkIfPodsAreUpdated: {{$CHECK_IF_PODS_ARE_UPDATED}}
+      labelSelector: group = aiml
+      operationTimeout: {{$operationTimeout}}
 
 - name: {{$actionName}}
   phases:
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$aiMlReplicasA}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: mn-st-a
+      objectTemplatePath: mn-statefulset.yaml
+      templateFillMap:
+        ReplicasMin: {{$aiMlSize}}
+        ReplicasMax: {{$aiMlSize}}
+  - namespaceRange:
+      min: 1
+      max: 1
+    replicasPerNamespace: {{$aiMlReplicasB}}
+    tuningSet: {{$tuningSet}}
+    objectBundle:
+    - basename: mn-st-b
+      objectTemplatePath: mn-statefulset.yaml
+      templateFillMap:
+        ReplicasMin: {{$aiMlSize}}
+        ReplicasMax: {{$aiMlSize}}
 {{if not $DISABLE_DAEMONSETS}}
   - namespaceRange:
       min: 1
@@ -265,3 +305,10 @@ steps:
       labelSelector: group = load
       timeout: {{$operationTimeout}}
 {{end}}
+#{{if $MN_STATEFULSET_ENABLE_LOAD_CHURN}}
+  - Method: WaitForControlledPodsRunning
+    Instances:
+    - Identifier: WaitForRunningAiMlStatefulSets
+    Params:
+      action: gather
+#{{end}}
