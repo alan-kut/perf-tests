@@ -50,6 +50,10 @@
 # Disable big jobs on small clusters.
 {{$bigJobsPerNamespace := IfThenElse $IS_SMALL_CLUSTER 0 1}}
 
+# AI ML
+{{$aiMlReplicas := DefaultParam .CL2_MN_STATEFULSET_REPLICAS 4}}
+{{$aiMlSize := DefaultParam .CL2_MN_STATEFULSET_SIZE 30}}
+
 # The minimal number of pods to be used to measure various things like
 # pod-startup-latency or scheduler-throughput. The purpose of it is to avoid
 # problems in small clusters where we wouldn't have enough samples (pods) to
@@ -195,6 +199,9 @@ steps:
       mediumJobsPerNamespace: 1
       smallJobSize: {{$SMALL_GROUP_SIZE}}
       smallJobsPerNamespace: 1
+      aiMlReplicasA: {{$aiMlReplicas}}
+      aiMlReplicasB: 0
+      aiMlSize: {{$aiMlSize}}
 
 {{if not $IS_SMALL_CLUSTER}}
 # BEGIN scheduler throughput
@@ -327,6 +334,45 @@ steps:
       mediumJobsPerNamespace: 1
       smallJobSize: {{$SMALL_GROUP_SIZE}}
       smallJobsPerNamespace: 1
+      aiMlReplicasA: 0
+      aiMlReplicasB: {{$aiMlReplicas}}
+      aiMlSize: {{$aiMlSize}}
+
+- module:
+    path: /modules/ai-ml-restart.yaml
+    params:
+      actionName: "restore"
+      operationTimeout: 30m
+      replicasA: 0
+      replicasB: {{$aiMlReplicas}}
+      size: {{$aiMlSize}}
+
+- module:
+    path: /modules/ai-ml-restart.yaml
+    params:
+      actionName: "restart"
+      operationTimeout: 30m
+      replicasA: {{$aiMlReplicas}}
+      replicasB: 0
+      size: {{$aiMlSize}}
+
+- module:
+    path: /modules/ai-ml-restart.yaml
+    params:
+      actionName: "delete"
+      operationTimeout: 30m
+      replicasA: 0
+      replicasB: 0
+      size: {{$aiMlSize}}
+
+- module:
+    path: /modules/ai-ml-restart.yaml
+    params:
+      actionName: "recreate"
+      operationTimeout: 30m
+      replicasA: {{$aiMlReplicas}}
+      replicasB: 0
+      size: {{$aiMlSize}}
 
 - module:
     path: /modules/reconcile-objects.yaml
@@ -360,6 +406,18 @@ steps:
       smallJobsPerNamespace: 0
       pvSmallStatefulSetSize: {{$SMALL_STATEFUL_SETS_PER_NAMESPACE}}
       pvMediumStatefulSetSize: {{$MEDIUM_STATEFUL_SETS_PER_NAMESPACE}}
+      aiMlReplicasA: 0
+      aiMlReplicasB: 0
+      aiMlSize: {{$aiMlSize}}
+
+- module:
+    path: /modules/ai-ml-restart.yaml
+    params:
+      actionName: "delete"
+      operationTimeout: 30m
+      replicasA: 0
+      replicasB: 0
+      size: {{$aiMlSize}}
 
 - module:
     path: /modules/configmaps-secrets.yaml
