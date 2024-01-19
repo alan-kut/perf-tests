@@ -1,5 +1,6 @@
 {{$Image := DefaultParam .Image "registry.k8s.io/pause:3.9"}}
 {{$RUN_ON_ARM_NODES := DefaultParam .CL2_RUN_ON_ARM_NODES false}}
+{{$EnableMNAnnotation := DefaultParam .CL2_ENABLE_MN_ANNOTATION true}}
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -7,7 +8,6 @@ metadata:
   name: {{.Name}}
   labels:
     group: aiml
-    multinetwork{{.Index}}: "true"
 spec:
   podManagementPolicy: Parallel
   replicas: {{RandIntRange .ReplicasMin .ReplicasMax}}
@@ -19,7 +19,7 @@ spec:
       labels:
         group: aiml
         name: {{.Name}}
-        multinetwork{{.Index}}: "true"
+  {{ if $EnableMNAnnotation }}
       annotations:
         networking.gke.io/default-interface: 'eth0'
         networking.gke.io/interfaces: |
@@ -30,25 +30,24 @@ spec:
             },
             {
               "interfaceName": "eth1",
-              "network": "net{{.Index}}-sub{{.Index}}-sec0"
+              "network": "mn-net1"
             },
             {
               "interfaceName": "eth2",
-              "network": "net{{.Index}}-sub{{.Index}}-sec1"
+              "network": "mn-net2"
             },
             {
               "interfaceName": "eth3",
-              "network": "net{{.Index}}-sub{{.Index}}-sec2"
+              "network": "mn-net3"
             },
             {
               "interfaceName": "eth4",
-              "network": "net{{.Index}}-sub{{.Index}}-sec3"
+              "network": "mn-net4"
             }
           ]
+  {{ end }}
     spec:
       schedulerName: gke.io/high-throughput-scheduler
-      nodeSelector:
-        multinetwork{{.Index}}: "true"
       containers:
       - name: {{.Name}}
         image: {{$Image}}
@@ -57,17 +56,9 @@ spec:
           hostPort: 7300
           protocol: TCP
         resources:
-          # Keep the CpuRequest/MemoryRequest request equal percentage of 1-core, 4GB node.
-          # For now we're setting it to 0.5%.
           requests:
             cpu: 5m
             memory: "20M"
       terminationGracePeriodSeconds: 1
       tolerations:
-      {{if $RUN_ON_ARM_NODES}}
-      - key: "kubernetes.io/arch"
-        operator: Equal
-        value: arm64
-        effect: NoSchedule
-      {{end}}
-  serviceName: mn-{{.Index}}
+  serviceName: svc-{{.Name}}
