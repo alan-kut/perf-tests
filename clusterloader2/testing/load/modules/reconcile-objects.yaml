@@ -99,6 +99,17 @@ steps:
       checkIfPodsAreUpdated: {{$CHECK_IF_PODS_ARE_UPDATED}}
       labelSelector: group = aiml
       operationTimeout: {{$operationTimeout}}
+  - Method: WaitForControlledPodsRunning
+    Instances:
+    - Identifier: WaitForRunningAiMlStatefulSets
+      Params:
+        apiVersion: apps/v1
+        kind: StatefulSet
+    Params:
+      action: start
+      checkIfPodsAreUpdated: {{$CHECK_IF_PODS_ARE_UPDATED}}
+      labelSelector: group = aiml
+      operationTimeout: {{$operationTimeout}}
 
 - name: {{$actionName}}
   phases:
@@ -312,3 +323,8 @@ steps:
     Params:
       action: gather
 #{{end}}
+  - Method: WaitForControlledPodsRunning
+    Instances:
+    - Identifier: WaitForRunningAiMlStatefulSets
+    Params:
+      action: gather
