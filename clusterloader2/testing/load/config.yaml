@@ -51,7 +51,6 @@
 {{$bigJobsPerNamespace := IfThenElse $IS_SMALL_CLUSTER 0 1}}
 
 # AI ML
-{{$aiMlReplicas := DefaultParam .CL2_MN_STATEFULSET_REPLICAS 4}}
 {{$aiMlSize := DefaultParam .CL2_MN_STATEFULSET_SIZE 30}}
 
 # The minimal number of pods to be used to measure various things like
@@ -199,7 +198,7 @@ steps:
       mediumJobsPerNamespace: 1
       smallJobSize: {{$SMALL_GROUP_SIZE}}
       smallJobsPerNamespace: 1
-      aiMlReplicasA: {{$aiMlReplicas}}
+      aiMlReplicasA: 1
       aiMlReplicasB: 0
       aiMlSize: {{$aiMlSize}}
 
@@ -335,7 +334,7 @@ steps:
       smallJobSize: {{$SMALL_GROUP_SIZE}}
       smallJobsPerNamespace: 1
       aiMlReplicasA: 0
-      aiMlReplicasB: {{$aiMlReplicas}}
+      aiMlReplicasB: 1
       aiMlSize: {{$aiMlSize}}
 
 - module:
@@ -344,7 +343,7 @@ steps:
       actionName: "restore"
       operationTimeout: 30m
       replicasA: 0
-      replicasB: {{$aiMlReplicas}}
+      replicasB: 1
       size: {{$aiMlSize}}
 
 - module:
@@ -352,7 +351,7 @@ steps:
     params:
       actionName: "restart"
       operationTimeout: 30m
-      replicasA: {{$aiMlReplicas}}
+      replicasA: 1
       replicasB: 0
       size: {{$aiMlSize}}
 
@@ -370,7 +369,7 @@ steps:
     params:
       actionName: "recreate"
       operationTimeout: 30m
-      replicasA: {{$aiMlReplicas}}
+      replicasA: 1
       replicasB: 0
       size: {{$aiMlSize}}
 
